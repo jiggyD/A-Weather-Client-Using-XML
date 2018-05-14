@@ -1,0 +1,135 @@
+<!-- /*
+  References :
+  #Data parsed from:
+  1. https://api.weather.gov/points/32.7357,-97.1081/forecast
+  #forecast.weather.gov site:
+  2. http://forecast.weather.gov/MapClick.php?textField1=32.81&textField2=-96.96#.WhOyn0qnE2x
+  #HTML view:
+  3. https://www.google.com/search?q=degree+symbol+html&rlz=1C1CHBF_enUS771US771&oq=degree+sy&aqs=chrome.1.0l2j69i57j0l3.4148j0j7&sourceid=chrome&ie=UTF-8
+  4. https://stackoverflow.com/questions/2076109/how-to-avoid-a-new-line-with-p-tag
+  5. https://stackoverflow.com/questions/17217766/two-divs-side-by-side-fluid-display
+  6. https://www.freeformatter.com/html-formatter.html#ad-output
+  7. https://stackoverflow.com/questions/5604859/adding-a-background-image-to-a-div-element
+  #Images/Icons:
+  8. http://forecast.weather.gov/css/images/header_noaa.png
+  9. http://forecast.weather.gov/css/images/header_nws.png
+  10. http://forecast.weather.gov/css/images/header_doc.png
+
+  •	Sample input:
+	o	Latitude: 32.7357 Longitude: -97.1081	(Arlington, TX)
+	o	Latitude: 38.50674 Longitude: -121.49597 (Sacramento, CA)
+
+
+*/ -->
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+
+// handle clicks after DOM is ready
+//function to retrieve weather parameters
+$(document).ready(function(){
+	// handle get weather data button click
+    $("#getData").click(function(){
+    	// fetch lat long values from input
+    	var latitude  = $("#lat").val();
+        var longitude = $("#long").val();
+        // generating url for ajax call
+        var urlPath   = "https://api.weather.gov/points/"+latitude+","+longitude+"/forecast"
+        
+        // making ajax call to forecast service with url generated above
+        $.ajax({
+			url: urlPath, 
+			success: function(data){
+				// setting the response received from the service to the user interface
+				$("#weatherContainer").css("display", "block");
+				$("#image1").attr('src', data.properties.periods[0].icon);
+				$("#ccLat").text($("#lat").val());
+				$("#ccLong").text($("#long").val());
+				$("#shortForecast").text(data.properties.periods[0].shortForecast);
+				$("#temperatureFrh").text(data.properties.periods[0].temperature);
+				$("#windSpeed").text(data.properties.periods[0].windSpeed);
+				$("#windDirection").text(data.properties.periods[0].windDirection);
+				$("#detailedForecast").text(data.properties.periods[0].detailedForecast);
+				$("#lastUpdated").text(data.properties.updated);
+        }});
+    });
+
+    // handle clear button click
+    $("#clear").click(function(){
+     	$("#weatherContainer").css("display", "none");
+    	$("#lat").val("");
+        $("#long").val("");
+    });
+});
+</script>
+</head>
+<body>
+	<!-- Display header images -->
+   <header class="row clearfix">
+      <a style="margin-left:2%;" class="pull-left"><img src="http://forecast.weather.gov/css/images/header_noaa.png"></a>
+      <a class="pull-left"><img src="http://forecast.weather.gov/css/images/header_nws.png"></a>
+      <a style="margin-right:1%;" class="pull-right"><img src="http://forecast.weather.gov/css/images/header_doc.png"></a>
+   </header>
+
+   <!--user input for lat and long -->
+  <div style="padding: 10px;background-color: lightblue;">
+   <div style="padding: 10px;width:70%;margin-left:  40%;">
+      <br>
+      <input id="lat"  type="text" name="Lat" placeholder="Please enter Latitude"><br><br>
+      <input id="long" type="text" name="Long" placeholder="Please enter Longitude">
+  </div> 
+
+  <!-- Button for Get weather data and clear data-->
+  <div style="padding: 10px;width:70%;margin-left:  39%;">  
+      <button id="getData" btn-primary>Get Weather Data</button>
+      <button id="clear" btn-cancel>Clear Data</button>
+   
+  <!-- Container to display weather condition--> 
+ </div>
+   <div id="weatherContainer" class="container" style="display:none; float:left; width:100%;">
+      <div class="panel panel-default">
+         <div class="panel-heading">
+            <div>
+               <b>Current conditions at</b><br>
+               <span class>
+                  <b>Lat:&nbsp;</b>
+                  <p style="display:inline;margin: 0px;"id="ccLat"></p>
+                  &nbsp;<b>Lon:&nbsp;</b>
+                  <p style="display:inline;margin: 0px;" id="ccLong"></p>
+               </span>
+            </div>
+         </div>
+         <div class="panel-body" style="width: 100%;">
+            <div style="float:left; width: 33%;">
+               <div style="float:left;">
+                  <img id="image1" src="" height="150px" width="150px">
+               </div>
+               <div>
+                  <p id="shortForecast" style="color:#00bfff;font-size:15px;padding:2px;margin: 0px;"></p>
+                  <p id="temperatureFrh" style="font-size:70px;display:inline;"></p>
+                  &#8457;
+               </div>
+            </div>
+            <div>
+               <b>Wind Speed:</b>
+               <p id="windSpeed"  style="margin: 0px;"></p>
+               <b>Wind Direction:</b>
+               <p id="windDirection" style="margin: 0px;"></p>
+               <b>Detailed Forecast:</b>
+               <p id="detailedForecast" style="display: inline;"></p>
+            </div>
+         </div>
+         <div class="panel-footer">
+            <b>Last Updated:</b>
+            <p id="lastUpdated"></p>
+         </div>
+      </div>
+   </div>
+</body>
+</html>
